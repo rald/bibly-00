@@ -1,5 +1,7 @@
 import xml.etree.ElementTree as ET
-tree = ET.parse('tlg.xml')
+
+tree = ET.parse('kjv.xml')
+
 root = tree.getroot()
 
 for bn in root.findall('BIBLEBOOK'):
@@ -15,6 +17,6 @@ for bn in root.findall('BIBLEBOOK'):
 			vnumber=vn.attrib['vnumber']
 			vers=vn.text
 
-			print(bname+" "+cnumber+":"+vnumber+" "+vers)
+			print(bname+"|"+cnumber+":"+vnumber+"|"+vers)
 
 
