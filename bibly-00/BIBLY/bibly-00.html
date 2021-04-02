@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Bible Reader</title>
+		<link rel="stylesheet" href="w3.css">
+		<style>
+			* {
+				font-family: sans-serif;
+				font-size: 24pt;
+			}
+
+			#menu {
+				margin: 20px;
+				text-align: center;
+			}
+
+			select {
+				font-family: sans-serif;
+				font-size: 24pt;
+			}
+
+			#view {
+				margin: 20px;
+			}
+
+            #searchText {
+				font-family: sans-serif;
+				font-size: 24pt;
+            }
+
+            #searchButton {
+				font-family: sans-serif;
+				font-size: 24pt;
+            }
+
+		</style>
+	</head>
+	<body>
+
+		<div id="menu">
+        <!--
+            <input id="searchText" type="text"> 
+            <input id="searchButton" type="button" value="Search" onclick="search();"> <br><br>
+        -->    
+			<select id="versions" onchange="javascript:changeVersion();"></select>
+			<select id="books" onchange="javascript:changeBook();"></select>
+			<select id="chapters" onchange="javascript:changeChapter();"></select>
+		</div>
+
+		<div id="view"></div>
+
+<script>
+
+var bibleVersions=[
+    ["King James Version",                  "BOOKS/kjv.xml"],
+	["Ang Dating Biblia",                   "BOOKS/tlg.xml"],
+];
+
+var searchText=document.getElementById("searchText");
+var versions=document.getElementById("versions");
+var books=document.getElementById("books");
+var chapters=document.getElementById("chapters");
+
+window.onload=init();
+
+function updateVersions(versions) {
+	removeOptions("versions");
+	for(var i=0;i<versions.length;i++) {
+		addOption("versions",versions[i][0],versions[i][1]);
+	}
+}
+
+function updateBooks(path) {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			showBooks(xhttp.responseXML);
+		}
+	};
+	xhttp.open("GET",path,false);
+	xhttp.send();
+}
+
+function updateChapters(path,book) {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			showChapters(xhttp.responseXML,book);
+		}
+	};
+	xhttp.open("GET",path,false);
+	xhttp.send();
+}
+
+function updateVers(path,book,chapter) {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			showVers(xhttp.responseXML,book,chapter);
+		}
+	};
+	xhttp.open("GET",path,false);
+	xhttp.send();
+}
+
+function showBooks(xml) {
+	var path = "/XMLBIBLE/BIBLEBOOK";
+	if (xml.evaluate) {
+		var nodes = xml.evaluate(path, xml, null, XPathResult.ANY_TYPE, null);
+		var result = nodes.iterateNext();
+		removeOptions("books");
+		while (result) {
+			var bname = result.attributes["bname"].nodeValue;
+			addOption("books",bname,bname);
+			result = nodes.iterateNext();
+		}
+	}
+}
+
+function showChapters(xml,book) {
+	var path = "/XMLBIBLE/BIBLEBOOK[@bname='"+book+"']/CHAPTER";
+	if (xml.evaluate) {
+		var nodes = xml.evaluate(path, xml, null, XPathResult.ANY_TYPE, null);
+		var result = nodes.iterateNext();
+		removeOptions("chapters");
+		while (result) {
+			var cnumber = result.attributes["cnumber"].nodeValue;
+			addOption("chapters",cnumber,cnumber);
+			result = nodes.iterateNext();
+		}
+	}
+}
+
+function showVers(xml,book,chapter) {
+	var path = "/XMLBIBLE/BIBLEBOOK[@bname='"+book+"']/CHAPTER[@cnumber='"+chapter+"']/VERS";
+	var txt = "";
+	if (xml.evaluate) {
+		var nodes = xml.evaluate(path, xml, null, XPathResult.ANY_TYPE, null);
+		var result = nodes.iterateNext();
+		while (result) {
+			vnumber = result.attributes["vnumber"].nodeValue;
+			verse = result.childNodes[0].nodeValue;
+			txt +=  book+" "+chapter+":"+
+                    vnumber + " -> " + verse + "<br><br>";
+			result = nodes.iterateNext();
+		}
+	}
+	document.getElementById("view").innerHTML = txt;
+}
+
+function addOption(id,text,value) {
+	var select=document.getElementById(id);
+	var option=document.createElement("option");
+	option.text=text;
+	option.value=value;
+	select.add(option);
+}
+
+function removeOptions(id) {
+	var select=document.getElementById(id);
+	var i;
+	for(i = select.options.length - 1 ; i >= 0 ; i--) {
+		select.remove(i);
+	}
+}
+
+function changeVersion() {
+	updateBooks(getCurrentVersion());
+	changeBook();
+}
+
+function changeBook() {
+	updateChapters(getCurrentVersion(),getCurrentBook());
+	changeChapter();
+}
+
+function changeChapter() {
+	updateVers(getCurrentVersion(),getCurrentBook(),getCurrentChapter());
+}
+
+function getCurrentVersion() {
+	return versions.options[versions.selectedIndex].value;
+}
+
+function getCurrentBook() {
+	return books.options[books.selectedIndex].value;
+}
+
+function getCurrentChapter() {
+	return chapters.options[chapters.selectedIndex].value;
+}
+
+function init() {
+	updateVersions(bibleVersions);
+	updateBooks(getCurrentVersion());
+	updateChapters(getCurrentVersion(),getCurrentBook());
+	updateVers(getCurrentVersion(),getCurrentBook(),getCurrentChapter());
+}
+
+</script>
+
+	</body>
+</html>
