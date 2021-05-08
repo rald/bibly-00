@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 
 
-class Bibly {
+class Main {
 
 	static String version = "bibly 0.1";
 	static String currentBibleVersion = "kjv.csv";
@@ -34,12 +34,15 @@ class Bibly {
 	}
 
 
+
 	static void printHelp() {
 		println("");
-		println(".help -> show help");
-		println(".books -> show books");
-		println(".find -> show books per chapter");
-		println(".end  -> exit");
+		println("command\t->\taction");
+		println(".help\t->\tshow help");
+		println(".books\t->\tshow books");
+		println(".find\t->\tshow books per chapter");
+		println(".search\t->\tshow search");
+		println(".end\t->\texit");
 		println("");
 	}
 
@@ -94,7 +97,6 @@ class Bibly {
 	static void printBibleBooksPerChapter() {
 		print("Book: ");    String book=input.nextLine();
 		print("Chapter: "); String chapter=input.nextLine();
-		openBibleFile(currentBibleVersion);
 		
 		String line="";
 		String[] arr1;
@@ -112,6 +114,34 @@ class Bibly {
 		closeBibleFile();
 	}
 
+
+
+	static void printSearch() {
+		print("Search: ");    String textToSearch=input.nextLine();
+
+		String line="";
+		String[] arr1;
+		String[] arr2;
+		int n=0;
+		openBibleFile(currentBibleVersion);
+		while(reader.hasNextLine()) {
+			line=reader.nextLine().replace("|"," ");
+			if(line.toLowerCase().contains(textToSearch.toLowerCase())) {
+			  n++;
+				print(line+"\n\n");
+			}			
+		}
+		
+		if(n==0) { 
+		  println("Found none.");
+		} else if(n==1) {
+		  println("Found "+n+" occurence.");
+		} else {
+		  println("Found "+n+" occurences.");
+		}
+		
+		closeBibleFile();
+	}
 
 
   public static void main(String[] args) {
@@ -140,6 +170,8 @@ class Bibly {
 				printBibleBooks();
 			} else if(cmd.equals(".find")) {
 				printBibleBooksPerChapter();
+			} else if(cmd.equals(".search")) {
+				printSearch();
 			}
 
 		}
