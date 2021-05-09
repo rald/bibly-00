@@ -2,37 +2,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.regex.Matcher; 
+import java.util.regex.Pattern; 
 
 
-class Verse {
-	int vnum;
-	String vers;
-	Verse(int vnum,String vers) {
-		this.vnum=vnum;
-		this.vers=vers;
+
+class Parser {
+
+	static String cbname=null;
+	static String ccnumber=null;
+	static String svnumber=null;
+	static String evnumber=null;
+
+	static void parse(String line) {
+		String pattern="(\\d\\s*)?(\\D+)\\s*(\\d+)(?:[:-](\\d+))?(?:\\s*-\\s*(\\d+))?";
+		Pattern r = Pattern.compile(pattern);
+    Matcher m = r.matcher(line);
+    if (m.find( )) {
+			String lnum=m.group(1);
+			String book=(lnum==null)?m.group(2):lnum+" "+m.group(2);
+			String cnum=m.group(3);
+			String svnum=m.group(4);
+			String evnum=m.group(5);
+			Main.println(book+" "+cnum+":"+svnum+(evnum==null?"":"-"+evnum));
+    } else {
+ 			System.out.println("NO MATCH");
+    }
+
 	}
-}
 
-class Chapter {
-	int cnum;
-	ArrayList<Verse> verses = new ArrayList<>();
-	Chapter(int cnum) {
-		this.cnum=cnum;
-	}
-}
-
-class Book {
-	String bname;
-	int bnum;
-	ArrayList<Chapter> chapters = new ArrayList<>();
-	Book(String bname,int bnum) {
-		this.bname=bname;
-		this.bnum=bnum;
-	}
-}
-
-class Bible {
-	ArrayList<Book> books = new ArrayList<>();
 }
 
 
@@ -145,7 +143,8 @@ public class Main {
 	static void printBibleBooksPerChapter() {
 		print("Book: ");    String book=input.nextLine();
 		print("Chapter: "); String chapter=input.nextLine();
-		
+		println("");		
+
 		String line="";
 		String[] arr1;
 		String[] arr2;
@@ -196,62 +195,6 @@ public class Main {
 
 
 
-	static Bible parseBible() {		
-		Bible bible = new Bible();
-
-		String line="";
-		String[] arr1;
-		String[] arr2;
-
-		int bnum=0;
-		int cnum=0;
-		int vnum=0;
-		String bname="";
-		String vers="";
-		boolean start=true;
-
-		openBibleFile(currentBibleVersion);
-
-		while(reader.hasNextLine()) {
-			line=reader.nextLine();
-			arr1=line.split("\\|");
-			arr2=arr1[1].split("\\:");
-
-			if(!arr1[0].equals(bname)) {
-				if(start) start=false; else bnum++;
-				bname = arr1[0]; 
-			} 
-
-			try {
-				cnum = Integer.parseInt(arr2[0])-1; 
-			} catch(NumberFormatException e) {
-				println("Invalid Chapter Number");
-				System.exit(0);
-			}
-
-			try {
-				vnum = Integer.parseInt(arr2[1])-1; 
-			} catch(NumberFormatException e) {
-				println("Invalid Verse Number");
-				System.exit(0);
-			}
-
-			vers = arr1[2]; 
-			
-//			println((bnum+1)+" "+bname+" "+(cnum+1)+":"+(vnum+1));
-
-			bible.books.add(new Book(bname,bnum));
-			bible.books.get(bnum).chapters.add(new Chapter(cnum));
-			bible.books.get(bnum).chapters.get(cnum).verses.add(new Verse(vnum,vers));
-						
-		}
-		closeBibleFile();
-
-		return bible;
-	}
-
-
-
   public static void main(String[] args) {
 
 		Bible bible = new Bible();
@@ -265,8 +208,6 @@ public class Main {
 		print(version+"\n\n");
 
 		printHelp();
-
-		bible=parseBible();
 
 		while(!finish) {
 			
