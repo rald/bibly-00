@@ -19,15 +19,16 @@ class Result {
 
 class Token {
 
-	static final int 		DEFAULT           = 0,
-                      NUMBER            = 1,
-                      STRING            = 2,
-                      COLON             = 3,
-                      DASH              = 4,
-                      SPACE							=	5,
-                      COMMA							= 6,
-                      EOF								= 7,
-                      UNKNOWN						= 8;
+	static final int
+													DEFAULT         = 0,
+													NUMBER          = 1,
+                      		STRING          = 2,
+                      		COLON           = 3,
+                      		DASH            = 4,
+                      		SPACE						= 5,
+                      		COMMA						= 6,
+                      		EOF							= 7,
+                      		UNKNOWN					= 8;
 
 	int type;
 	String value;
@@ -36,7 +37,7 @@ class Token {
 		this.type=type;
 		this.value=value;
 	}
-	
+
 }
 
 
@@ -340,12 +341,14 @@ class Main {
 
 		textfield.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				if(e.getSource()==textfield) {
+				
+					String text=textfield.getText().trim();
 
 					if(textfield.getText().equals(".clear")) {
-						textarea.setText("");				
+						textarea.setText("");
 					} else {
-						
 						Lexer lexer=new Lexer(textfield.getText());
 
 						Vector tokens=lexer.lex();
@@ -357,9 +360,9 @@ class Main {
 						showVerses(bibleVersion,result);
 
 					}
-
+				
 					textfield.setText("");
-					
+
 				}
 			}
 		});
