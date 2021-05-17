@@ -7,59 +7,59 @@ import java.io.*;
 
 
 
-class Result {
+class Vers {
     String bname="";
     int cnum;
     int svnum;
     int evnum;
-    Result() {}
+    Vers() {}
+}
+
+
+
+enum TokenType {
+    DEFAULT,
+    NUMBER,
+    STRING,
+    COLON,
+    DASH,
+    SPACE,
+    COMMA,
+    EOF,
+    UNKNOWN
 }
 
 
 
 class Token {
-
-    static final int
-    DEFAULT         = 0,
-    NUMBER          = 1,
-    STRING          = 2,
-    COLON           = 3,
-    DASH            = 4,
-    SPACE           = 5,
-    COMMA           = 6,
-    EOF             = 7,
-    UNKNOWN         = 8;
-
-    int type;
+    TokenType type;
     String value;
 
-    Token(int type,String value) {
+    Token(TokenType type,String value) {
         this.type=type;
         this.value=value;
     }
-
 }
 
 
 
-class LexerState {
-	static final int
-    	  DEFAULT           =  0,
-        NUMBER            =  1,
-        STRING            =  2,
-        COLON             =  3,
-        DASH              =  4,
-        SPACE	            =  5,
-        COMMA             =  6,
-        EOF               =  7,
-        UNKNOWN		        =  8;
+enum LexerState {
+    DEFAULT,
+    NUMBER,
+    STRING,
+    COLON,
+    DASH,
+    SPACE,
+    COMMA,
+    EOF,
+    UNKNOWN
 }
 
 
 
 class Lexer {
 
-    int state=LexerState.DEFAULT;
+    LexerState state=LexerState.DEFAULT;
 
     String txt="";
     int idx=0;
@@ -77,13 +77,13 @@ class Lexer {
         return '\0';
     }
 
-    Vector lex() {
-        Vector tokens = new Vector();
+    ArrayList<Token> lex() {
+        ArrayList<Token> tokens = new ArrayList<>();
         state = LexerState.DEFAULT;
         String value="";
         while(idx<num) {
             switch(state) {
-            case LexerState.DEFAULT:
+            case DEFAULT:
                 if(Character.isDigit(look(0))) {
                     System.out.println("number");
                     idx--;
@@ -108,22 +108,22 @@ class Lexer {
                     idx--;
                 }
                 break;
-            case LexerState.NUMBER:
+            case NUMBER:
                 while(idx<num && Character.isDigit(look(0))) {
                     value+=Character.toString(look(0));
                     idx++;
                 }
-                tokens.addElement(new Token(Token.NUMBER,value));
+                tokens.add(new Token(TokenType.NUMBER,value));
                 value="";
                 idx--;
                 state=LexerState.DEFAULT;
                 break;
-            case LexerState.STRING:
+            case STRING:
                 while(idx<num && (Character.isLetter(look(0)) || look(0)==' ')) {
                     value+=Character.toString(look(0));
                     idx++;
                 }
-                tokens.addElement(new Token(Token.STRING,value.trim()));
+                tokens.add(new Token(TokenType.STRING,value.trim()));
                 value="";
                 idx--;
                 state=LexerState.DEFAULT;
@@ -133,7 +133,7 @@ class Lexer {
             }
             idx++;
         }
-        tokens.addElement(new Token(Token.EOF,null));
+        tokens.add(new Token(TokenType.EOF,null));
         return tokens;
     }
 
@@ -143,126 +143,126 @@ class Lexer {
 
 class Interpreter {
 
-    Vector tokens = null;
+    ArrayList<Token> tokens=new ArrayList<>();
     int pos=0;
     Token curtok=null;
 
-    Interpreter(Vector tokens) {
+    Interpreter(ArrayList<Token> tokens) {
         this.tokens=tokens;
     }
 
     Token next() {
         if(pos>tokens.size()-1) {
-            return new Token(Token.EOF,null);
+            return new Token(TokenType.EOF,null);
         }
-        return ((Token)tokens.elementAt(pos++));
+        return tokens.get(pos++);
     }
 
-    boolean match(int type) {
+    boolean match(TokenType type) {
         if(curtok.type==type) {
             return true;
         }
         return false;
     }
 
-    Result getLetter() {
+    Vers getLetter() {
 
         System.out.println("getLetter");
 
-        Result result=new Result();
+        Vers vers=new Vers();
 
-        if(match(Token.NUMBER)) {
-            result.bname=curtok.value+" ";
+        if(match(TokenType.NUMBER)) {
+            vers.bname=curtok.value+" ";
             curtok=next();
         }
 
-        if(match(Token.STRING)) {
-            result.bname+=curtok.value;
+        if(match(TokenType.STRING)) {
+            vers.bname+=curtok.value;
             curtok=next();
         }
 
-        if(match(Token.NUMBER)) {
+        if(match(TokenType.NUMBER)) {
             try {
-                result.cnum=Integer.parseInt(curtok.value);
+                vers.cnum=Integer.parseInt(curtok.value);
             } catch(Exception e) {
             }
             curtok=next();
         }
 
-        if(match(Token.NUMBER)) {
+        if(match(TokenType.NUMBER)) {
             try {
-                result.svnum=Integer.parseInt(curtok.value);
+                vers.svnum=Integer.parseInt(curtok.value);
             } catch(Exception e) {
             }
             curtok=next();
         }
 
-        if(match(Token.NUMBER)) {
+        if(match(TokenType.NUMBER)) {
             try {
-                result.evnum=Integer.parseInt(curtok.value);
+                vers.evnum=Integer.parseInt(curtok.value);
             } catch(Exception e) {
             }
             curtok=next();
         }
 
-        return result;
+        return vers;
     }
 
-    Result getBook() {
+    Vers getBook() {
 
         System.out.println("getBook");
 
-        Result result=new Result();
+        Vers vers=new Vers();
 
-        if(match(Token.STRING)) {
-            result.bname+=curtok.value;
+        if(match(TokenType.STRING)) {
+            vers.bname+=curtok.value;
             curtok=next();
         }
 
-        if(match(Token.NUMBER)) {
+        if(match(TokenType.NUMBER)) {
             try {
-                result.cnum=Integer.parseInt(curtok.value);
+                vers.cnum=Integer.parseInt(curtok.value);
             } catch(Exception e) {
             }
             curtok=next();
         }
 
-        if(match(Token.NUMBER)) {
+        if(match(TokenType.NUMBER)) {
             try {
-                result.svnum=Integer.parseInt(curtok.value);
+                vers.svnum=Integer.parseInt(curtok.value);
             } catch(Exception e) {
             }
             curtok=next();
         }
 
-        if(match(Token.NUMBER)) {
+        if(match(TokenType.NUMBER)) {
             try {
-                result.evnum=Integer.parseInt(curtok.value);
+                vers.evnum=Integer.parseInt(curtok.value);
             } catch(Exception e) {
             }
             curtok=next();
         }
 
-        return result;
+        return vers;
     }
 
-    Result expr() {
+    Vers expr() {
 
         System.out.println("expr");
 
-        Result result=null;
+        Vers vers=null;
 
         curtok=next();
 
-        if(match(Token.NUMBER)) {
-            result=getLetter();
+        if(match(TokenType.NUMBER)) {
+            vers=getLetter();
         }
 
-        if(match(Token.STRING)) {
-            result=getBook();
+        if(match(TokenType.STRING)) {
+            vers=getBook();
         }
 
-        return result;
+        return vers;
     }
 
 }
@@ -283,7 +283,7 @@ class Main {
     static JScrollPane scrollpane;
     static JTextField textfield;
 
-    static void showVerses(String bibleVersion,Result result) {
+    static void showVerses(Vers vers) {
         System.out.println("show verses");
         try {
             BufferedReader reader = new BufferedReader(new FileReader(bibleVersion));
@@ -291,20 +291,20 @@ class Main {
             while((line=reader.readLine())!=null) {
                 String[] a1=line.split("\\|",3);
                 String[] a2=a1[1].split("\\:",2);
-                if(result.svnum==0 && result.evnum==0) {
-                    if( result.bname.equalsIgnoreCase(a1[0]) &&
-                            result.cnum==Integer.parseInt(a2[0])
+                if(vers.svnum==0 && vers.evnum==0) {
+                    if( vers.bname.equalsIgnoreCase(a1[0]) &&
+                            vers.cnum==Integer.parseInt(a2[0])
                       ) textarea.append(line.replace("|"," ")+"\n\n");
-                } else if(result.svnum!=0 && result.evnum!=0) {
-                    if( result.bname.equalsIgnoreCase(a1[0]) &&
-                            result.cnum==Integer.parseInt(a2[0]) &&
-                            result.svnum<=Integer.parseInt(a2[1]) &&
-                            result.evnum>=Integer.parseInt(a2[1])
+                } else if(vers.svnum!=0 && vers.evnum!=0) {
+                    if( vers.bname.equalsIgnoreCase(a1[0]) &&
+                            vers.cnum==Integer.parseInt(a2[0]) &&
+                            vers.svnum<=Integer.parseInt(a2[1]) &&
+                            vers.evnum>=Integer.parseInt(a2[1])
                       ) textarea.append(line.replace("|"," ")+"\n\n");
-                } else if(result.svnum!=0 && result.evnum==0) {
-                    if( result.bname.equalsIgnoreCase(a1[0]) &&
-                            result.cnum==Integer.parseInt(a2[0]) &&
-                            result.svnum==Integer.parseInt(a2[1])
+                } else if(vers.svnum!=0 && vers.evnum==0) {
+                    if( vers.bname.equalsIgnoreCase(a1[0]) &&
+                            vers.cnum==Integer.parseInt(a2[0]) &&
+                            vers.svnum==Integer.parseInt(a2[1])
                       ) textarea.append(line.replace("|"," ")+"\n\n");
                 }
             }
@@ -312,6 +312,35 @@ class Main {
             System.out.println(e.getMessage());
         }
     }
+
+		void searchVerses(String text) {
+  		try {
+      	BufferedReader reader = new BufferedReader(new FileReader(bibleVersion));
+        String line="";
+        while((line=reader.readLine())!=null) {
+            String[] a1=line.split("\\|",3);
+            String[] a2=a1[1].split("\\:",2);
+            if(vers.svnum==0 && vers.evnum==0) {
+                if( vers.bname.equalsIgnoreCase(a1[0]) &&
+                        vers.cnum==Integer.parseInt(a2[0])
+                  ) textarea.append(line.replace("|"," ")+"\n\n");
+            } else if(vers.svnum!=0 && vers.evnum!=0) {
+                if( vers.bname.equalsIgnoreCase(a1[0]) &&
+                        vers.cnum==Integer.parseInt(a2[0]) &&
+                        vers.svnum<=Integer.parseInt(a2[1]) &&
+                        vers.evnum>=Integer.parseInt(a2[1])
+                  ) textarea.append(line.replace("|"," ")+"\n\n");
+            } else if(vers.svnum!=0 && vers.evnum==0) {
+              if( vers.bname.equalsIgnoreCase(a1[0]) &&
+                      vers.cnum==Integer.parseInt(a2[0]) &&
+                      vers.svnum==Integer.parseInt(a2[1])
+                ) textarea.append(line.replace("|"," ")+"\n\n");
+            }
+          }
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }		
+		}
 
     public static void main(String[] args) {
 
@@ -342,24 +371,34 @@ class Main {
         frame.add(textfield,BorderLayout.SOUTH);
 
         textfield.addActionListener(new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
 
                 if(e.getSource()==textfield) {
 
                     String text=textfield.getText().trim();
 
-                    if(textfield.getText().equals(".clear")) {
+                    if(text.equals(".clear")) {
+
                         textarea.setText("");
+
+                    } else if(text.startsWithIgnoreCase(".search")) {
+
+											String textToSearch=text.substring(8);
+
+											searchVerses(textToSearch);
+
                     } else {
+
                         Lexer lexer=new Lexer(textfield.getText());
 
-                        Vector tokens=lexer.lex();
+                        ArrayList<Token> tokens=lexer.lex();
 
                         Interpreter interpreter = new Interpreter(tokens);
 
-                        Result result=interpreter.expr();
+                        Vers vers=interpreter.expr();
 
-                        showVerses(bibleVersion,result);
+                        showVerses(bibleVersion,vers);
 
                     }
 
@@ -367,6 +406,7 @@ class Main {
 
                 }
             }
+
         });
 
         frame.setVisible(true);

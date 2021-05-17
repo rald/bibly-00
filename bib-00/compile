@@ -1,0 +1,1 @@
+javac -cp pircbot.jar:. Main.java

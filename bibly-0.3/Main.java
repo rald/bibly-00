@@ -275,7 +275,8 @@ class Main {
 
     static String bibleVersion = "kjv.csv";
 
-    static Font myFont = new Font("Sans-serif", Font.PLAIN, 24);
+    static 
+    Font myFont = new Font(Font.MONOSPACED, Font.PLAIN, 18);
 
     static JFrame frame;
     static JLabel label;
@@ -283,10 +284,18 @@ class Main {
     static JScrollPane scrollpane;
     static JTextField textfield;
 
-    static void showVerses(String bibleVersion,Vers vers) {
+    static void showHelp() {
+        textarea.append("commands       -> action\n");
+        textarea.append(".help          -> print this help\n");
+        textarea.append(".clear         -> clear screen\n");
+        textarea.append(".search [text] -> search for text\n\n");
+    }
+
+    static void showVerses(Vers vers) {
         System.out.println("show verses");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(bibleVersion));
+            InputStream in = Main.class.getResourceAsStream(bibleVersion);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));            
             String line="";
             while((line=reader.readLine())!=null) {
                 String[] a1=line.split("\\|",3);
@@ -313,11 +322,38 @@ class Main {
         }
     }
 
+    static void searchVerses(String needle) {
+        try {
+            InputStream in = Main.class.getResourceAsStream(bibleVersion);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));            
+            String line="";
+            int n=0;
+            while((line=reader.readLine())!=null) {
+                String haystack=line.replace("|"," ");
+                if(haystack.toLowerCase().contains(needle.toLowerCase())) {
+                    n++;
+                    textarea.append(haystack+"\n\n");
+                }
+            }
+
+            if(n==0) {
+                textarea.append("None found.\n\n");
+            } else if(n==1) {
+                textarea.append("Found "+n+" occurence.\n\n");
+            } else {
+                textarea.append("Found "+n+" occurences.\n\n");
+            }
+            
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
 
         frame=new JFrame(version);
 
-        frame.setSize(320,240);
+        frame.setSize(640,480);
 
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -341,6 +377,8 @@ class Main {
         textfield.setFont(myFont);
         frame.add(textfield,BorderLayout.SOUTH);
 
+        textarea.append("type .help for commands\n\n");
+
         textfield.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -349,9 +387,19 @@ class Main {
 
                     String text=textfield.getText().trim();
 
-                    if(textfield.getText().equals(".clear")) {
+                    if(text.equals(".help")) {
+
+                        showHelp();
+
+                    } else if(text.equals(".clear")) {
 
                         textarea.setText("");
+
+                    } else if(text.toLowerCase().startsWith(".search")) {
+
+                        String textToSearch=text.substring(8);
+
+                        searchVerses(textToSearch);
 
                     } else {
 
@@ -363,7 +411,7 @@ class Main {
 
                         Vers vers=interpreter.expr();
 
-                        showVerses(bibleVersion,vers);
+                        showVerses(vers);
 
                     }
 
@@ -375,7 +423,6 @@ class Main {
         });
 
         frame.setVisible(true);
-
     }
 }
 
