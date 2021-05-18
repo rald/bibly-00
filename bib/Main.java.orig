@@ -1,0 +1,53 @@
+import org.jibble.pircbot.*;
+import java.time.*;
+
+
+
+class BiblyBot extends PircBot {
+
+    static final String    SERVER  = "irc.dal.net";
+    static final int       PORT    = 6667;
+    static final String    PASS    = "paanoanggagawinko";
+    static final String    CHANNEL = "#bibly";
+    static final String    NICK    = "siesto";
+    static final String    MSTR    = "siesta";
+
+    BiblyBot() {
+        setName(NICK);
+    }
+
+    public void onMessage(
+            String channel,
+            String sender,
+            String login,
+            String hostname,
+            String message) {
+
+        if(message.equals(".quit")) {
+            quitServer("bye!");
+        }
+
+        if (message.equals(".time")) {
+            String time = new java.util.Date().toString();
+            sendMessage(channel, sender + ": The time is now " + time);
+        }
+        
+    }    
+}
+
+
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+
+        BiblyBot bot = new BiblyBot();
+
+        bot.setVerbose(true);
+
+        bot.connect(BiblyBot.SERVER, BiblyBot.PORT, BiblyBot.PASS);
+
+        bot.joinChannel(BiblyBot.CHANNEL);
+    }
+
+}
