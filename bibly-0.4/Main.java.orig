@@ -275,15 +275,12 @@ class Interpreter {
 
 class Main {
 
-    static final int DEBUG=0;
-    static final String newline=System.getProperty("line.separator");;
-
-    static String version = "Bibly 0.4";
+    static String version = "Bibly 0.1";
 
     static String bibleVersion = "kjv.csv";
 
-    static Font myFont = new Font(Font.MONOSPACED, Font.PLAIN, 20);
-
+    static 
+    Font myFont = new Font(Font.MONOSPACED, Font.PLAIN, 18);
 
     static JFrame frame;
     static JLabel label;
@@ -292,32 +289,19 @@ class Main {
     static JTextField textfield;
 
     static void showHelp() {
-        String helpText=
-                "<html>"+
-                "<table>"+
-                "<tr><td>.help           <td>-&gt; print this help<br>"+
-                "<tr><td>.books          <td>-&gt; show books<br>"+
-                "<tr><td>.clear          <td>-&gt; clear screen<br>"+
-                "<tr><td>.list           <td>-&gt; list bibly files<br>"+
-                "<tr><td>.pick           <td>-&gt; pick a random verse<br>"+
-                "<tr><td>.search [text]  <td>-&gt; search for text<br>"+
-                "<tr><td>.save [filename]<td>-&gt; save text to bibly file<br>"+
-                "<tr><td>.load [filename]<td>-&gt; load text from bibly file"+
-                "<tr><td>.delete [filename]<td>-&gt; delete a bibly file<br>"+
-                "</table></html>"+newline+newline;
-
-        JTextPane helpTextPane=new JTextPane();
-        helpTextPane.setContentType("text/html");
-        helpTextPane.setFont(new Font(Font.MONOSPACED,Font.PLAIN,18));
-        helpTextPane.setText(helpText);
-        JOptionPane.showMessageDialog(null,helpTextPane,"Info",JOptionPane.INFORMATION_MESSAGE);
+        textarea.append("commands       -> action\n");
+        textarea.append(".help          -> print this help\n");
+        textarea.append(".clear         -> clear screen\n");
+        textarea.append(".books         -> show books\n");
+        textarea.append(".pick          -> pick a random verse\n");
+        textarea.append(".search [text] -> search for text\n");
     }
 
     static void showVerses(Vers vers) {
-        if(DEBUG==1) System.out.println("show verses");
+        System.out.println("show verses");
         try {
             InputStream in = Main.class.getResourceAsStream(bibleVersion);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));            
             String line="";
             while((line=reader.readLine())!=null) {
                 String[] a1=line.split("\\|",3);
@@ -325,60 +309,58 @@ class Main {
                 if(vers.svnum==0 && vers.evnum==0) {
                     if( vers.bname.equalsIgnoreCase(a1[0]) &&
                             vers.cnum==Integer.parseInt(a2[0])
-                      ) textarea.append(line.replace("|"," ")+newline+newline);
+                      ) textarea.append(line.replace("|"," ")+"\n\n");
                 } else if(vers.svnum!=0 && vers.evnum!=0) {
                     if( vers.bname.equalsIgnoreCase(a1[0]) &&
                             vers.cnum==Integer.parseInt(a2[0]) &&
                             vers.svnum<=Integer.parseInt(a2[1]) &&
                             vers.evnum>=Integer.parseInt(a2[1])
-                      ) textarea.append(line.replace("|"," ")+newline+newline);
+                      ) textarea.append(line.replace("|"," ")+"\n\n");
                 } else if(vers.svnum!=0 && vers.evnum==0) {
                     if( vers.bname.equalsIgnoreCase(a1[0]) &&
                             vers.cnum==Integer.parseInt(a2[0]) &&
                             vers.svnum==Integer.parseInt(a2[1])
-                      ) textarea.append(line.replace("|"," ")+newline+newline);
+                      ) textarea.append(line.replace("|"," ")+"\n\n");
                 }
             }
 
             reader.close();
-
+            
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            System.out.println(e.getMessage());
         }
     }
 
     static void searchVerses(String needle) {
-        if(DEBUG==1) System.out.println("search verses");
         try {
             InputStream in = Main.class.getResourceAsStream(bibleVersion);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));            
             String line="";
             int n=0;
             while((line=reader.readLine())!=null) {
                 String haystack=line.replace("|"," ");
                 if(haystack.toLowerCase().contains(needle.toLowerCase())) {
                     n++;
-                    textarea.append(haystack+newline+newline);
+                    textarea.append(haystack+"\n\n");
                 }
             }
 
             if(n==0) {
-                textarea.append("None found."+newline+newline);
+                textarea.append("None found.\n\n");
             } else if(n==1) {
-                textarea.append("Found "+n+" occurence."+newline+newline);
+                textarea.append("Found "+n+" occurence.\n\n");
             } else {
-                textarea.append("Found "+n+" occurences."+newline+newline);
+                textarea.append("Found "+n+" occurences.\n\n");
             }
-
+            
             reader.close();
 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            System.out.println(e.getMessage());
         }
     }
 
     static void showBooks() {
-        if(DEBUG==1) System.out.println("show books");
         try {
             InputStream in = Main.class.getResourceAsStream(bibleVersion);
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -392,26 +374,25 @@ class Main {
                 if(books.indexOf(a1[0])==-1) books.add(a1[0]);
             }
 
-            textarea.append("Books of the Bible"+newline+newline);
-            textarea.append("Old Testament"+newline+newline);
+            textarea.append("Books of the Bible\n\n");
+            textarea.append("Old Testament\n\n");
 
-            for(int i=0; i<books.size(); i++) {
+            for(int i=0;i<books.size();i++) {
                 if(books.get(i).toString().equalsIgnoreCase("Matthew")) {
-                    textarea.append(newline+newline+"New Testament"+newline+newline);
+                    textarea.append("\n\nNew Testament\n\n");                
                 } else if(i!=0) textarea.append(", ");
                 textarea.append(books.get(i));
             }
-            textarea.append(newline+newline);
-
+            textarea.append("\n\n");
+                        
             reader.close();
-
+ 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            System.out.println(e.getMessage());
         }
     }
 
     static void randomVerse() {
-        if(DEBUG==1) System.out.println("random verses");
         try {
             InputStream in = Main.class.getResourceAsStream(bibleVersion);
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -423,110 +404,42 @@ class Main {
                     chosen=line;
                 }
             }
-            textarea.append(chosen.replace("|"," ")+newline+newline);
+            textarea.append(chosen.replace("|"," ")+"\n\n");
             reader.close();
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            System.out.println(e.getMessage());
         }
     }
 
     static void save(String filename) {
-        if(DEBUG==1) System.out.println("save");
-
-		filename="bibly/"+filename+".bibly";
-
-        File file = new File(filename);
-
-        if(file.exists() && !file.isDirectory()) {
-            int dialogResult = JOptionPane.showConfirmDialog(null,"File already exists do you want to overwrite?","Warning",JOptionPane.YES_NO_OPTION);
-            if(dialogResult == JOptionPane.NO_OPTION){
-                return;
-            }             
-        }
-
         try {
 
             FileWriter writer = new FileWriter(filename);
 
-            String[] lines=textarea.getText().split("\\n");
-
-            for(int i=0;i<lines.length;i++) {
-                String line=lines[i].trim();
-                if(!line.isEmpty()) writer.write(line+newline+newline);
-            }
+            writer.write(textarea.getText());
 
             writer.close();
-
+  
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            System.out.println(e.getMessage());
         }
     }
 
     static void load(String filename) {
-        if(DEBUG==1) System.out.println("load");
         try {
-
-			filename="bibly/"+filename+".bibly";
 
             BufferedReader reader = new BufferedReader(new FileReader(filename));
 
-            String line="";
-
-            while((line=reader.readLine())!=null) {
-                textarea.append(line.trim()+newline);
+            while(reader.hasNextLine()) {
+                textarea.append(reader.nextLine());
             }
 
             reader.close();
-
+  
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            System.out.println(e.getMessage());
         }
     }
-
-	static void showFileList(String ext) { 
-        if(DEBUG==1) System.out.println("show file list");
-		File folder = new File("bibly");
-		File[] listOfFiles = folder.listFiles();
-		Arrays.sort(listOfFiles);
-		String files="";
-		boolean first=true;
-		boolean found=false;
-		
-		for (int i=0;i<listOfFiles.length;i++) {
-			String name=listOfFiles[i].getName();
-			if (	listOfFiles[i].isFile() && 
-					name.toLowerCase().endsWith(ext)) {
-				found=true;
-				if(first) first=false; else files+=", ";
-				files+=name.substring(0,name.lastIndexOf("."));
-			}
-		}
-
-		textarea.append("Bibly files:"+newline+newline);
-		if(found) {
-			textarea.append(files+newline+newline);
-		} else {
-			textarea.append("None found."+newline+newline);			
-		}
-	}
-
-	static void deleteFile(String filename) {
-        if(DEBUG==1) System.out.println("delete file");
-		filename="bibly/"+filename.trim()+".bibly";
-		File file = new File(filename); 
-        if(file.exists() && !file.isDirectory()) {
-            int dialogResult = JOptionPane.showConfirmDialog(null,"Do you want to delete file: "+filename,"Warning",JOptionPane.YES_NO_OPTION);
-            if(dialogResult == JOptionPane.NO_OPTION){
-                return;
-            }
-        }
-	    if (file.delete()) { 
-	    	JOptionPane.showMessageDialog(null,"Deleted file: "+filename,"Info",JOptionPane.INFORMATION_MESSAGE); 
-	    } else {
-	    	JOptionPane.showMessageDialog(null,"Failed to delete: "+filename,"Warning",JOptionPane.WARNING_MESSAGE); 
-	    } 
-	}
-
 
     public static void main(String[] args) {
 
@@ -543,7 +456,7 @@ class Main {
         frame.setLayout(new BorderLayout());
 
         textarea=new JTextArea();
-//        textarea.setEditable(false);
+        textarea.setEditable(false);
         textarea.setLineWrap(true);
         textarea.setFont(myFont);
 //		textarea.setForeground(Color.BLUE);
@@ -556,15 +469,7 @@ class Main {
         textfield.setFont(myFont);
         frame.add(textfield,BorderLayout.SOUTH);
 
-        frame.addWindowListener( new WindowAdapter() {
-            public void windowOpened( WindowEvent e ){
-                textfield.requestFocus();
-            }
-        }); 
-
-        frame.setVisible(true);
-
-        JOptionPane.showMessageDialog(null,"Type .help for commands.","Info",JOptionPane.INFORMATION_MESSAGE); 
+        textarea.append("type .help for commands\n\n");
 
         textfield.addActionListener(new ActionListener() {
 
@@ -581,16 +486,6 @@ class Main {
                     } else if(text.equals(".pick")) {
 
                         randomVerse();
-
-                    } else if(text.startsWith(".delete")) {
-
-                        String filename=text.substring(7).trim();
-
-                        deleteFile(filename);
-
-                    } else if(text.equals(".list")) {
-
-                        showFileList(".bibly");
 
                     } else if(text.startsWith(".save")) {
 
@@ -611,7 +506,7 @@ class Main {
                     } else if(text.equals(".books")) {
 
                         showBooks();
-
+                        
                     } else if(text.toLowerCase().startsWith(".search")) {
 
                         String textToSearch=text.substring(8).trim();
@@ -639,6 +534,7 @@ class Main {
 
         });
 
+        frame.setVisible(true);
     }
 }
 
