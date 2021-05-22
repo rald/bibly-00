@@ -293,18 +293,18 @@ class Main {
 
     static void showHelp() {
         String helpText=
-                "<html>"+
-                "<table>"+
-                "<tr><td>.help           <td>-&gt; print this help<br>"+
-                "<tr><td>.books          <td>-&gt; show books<br>"+
-                "<tr><td>.clear          <td>-&gt; clear screen<br>"+
-                "<tr><td>.list           <td>-&gt; list bibly files<br>"+
-                "<tr><td>.pick           <td>-&gt; pick a random verse<br>"+
-                "<tr><td>.search [text]  <td>-&gt; search for text<br>"+
-                "<tr><td>.save [filename]<td>-&gt; save text to bibly file<br>"+
-                "<tr><td>.load [filename]<td>-&gt; load text from bibly file"+
-                "<tr><td>.delete [filename]<td>-&gt; delete a bibly file<br>"+
-                "</table></html>"+newline+newline;
+            "<html>"+
+            "<table>"+
+            "<tr><td>.help           <td>-&gt; print this help"+
+            "<tr><td>.books          <td>-&gt; show books"+
+            "<tr><td>.clear          <td>-&gt; clear screen"+
+            "<tr><td>.pick           <td>-&gt; pick a random verse"+
+            "<tr><td>.search [text]  <td>-&gt; search for text"+
+            "<tr><td>.list           <td>-&gt; list bibly files"+
+            "<tr><td>.save [filename]<td>-&gt; save text to bibly file"+
+            "<tr><td>.open [filename]<td>-&gt; load text from bibly file"+
+            "<tr><td>.delete [filename]<td>-&gt; delete a bibly file"+
+            "</table></html>"+newline+newline;
 
         JTextPane helpTextPane=new JTextPane();
         helpTextPane.setContentType("text/html");
@@ -343,7 +343,7 @@ class Main {
             reader.close();
 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            JOptionPane.showMessageDialog(null,e.getMessage());
         }
     }
 
@@ -373,7 +373,7 @@ class Main {
             reader.close();
 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            JOptionPane.showMessageDialog(null,e.getMessage());
         }
     }
 
@@ -406,7 +406,7 @@ class Main {
             reader.close();
 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            JOptionPane.showMessageDialog(null,e.getMessage());
         }
     }
 
@@ -426,22 +426,22 @@ class Main {
             textarea.append(chosen.replace("|"," ")+newline+newline);
             reader.close();
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            JOptionPane.showMessageDialog(null,e.getMessage());
         }
     }
 
     static void save(String filename) {
         if(DEBUG==1) System.out.println("save");
 
-		filename="bibly/"+filename+".bibly";
+        filename="bibly/"+filename+".bibly";
 
         File file = new File(filename);
 
         if(file.exists() && !file.isDirectory()) {
             int dialogResult = JOptionPane.showConfirmDialog(null,"File already exists do you want to overwrite?","Warning",JOptionPane.YES_NO_OPTION);
-            if(dialogResult == JOptionPane.NO_OPTION){
+            if(dialogResult == JOptionPane.NO_OPTION) {
                 return;
-            }             
+            }
         }
 
         try {
@@ -450,7 +450,7 @@ class Main {
 
             String[] lines=textarea.getText().split("\\n");
 
-            for(int i=0;i<lines.length;i++) {
+            for(int i=0; i<lines.length; i++) {
                 String line=lines[i].trim();
                 if(!line.isEmpty()) writer.write(line+newline+newline);
             }
@@ -458,15 +458,15 @@ class Main {
             writer.close();
 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            JOptionPane.showMessageDialog(null,e.getMessage());
         }
     }
 
-    static void load(String filename) {
+    static void open(String filename) {
         if(DEBUG==1) System.out.println("load");
         try {
 
-			filename="bibly/"+filename+".bibly";
+            filename="bibly/"+filename+".bibly";
 
             BufferedReader reader = new BufferedReader(new FileReader(filename));
 
@@ -479,53 +479,53 @@ class Main {
             reader.close();
 
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null,e.getMessage()); 
+            JOptionPane.showMessageDialog(null,e.getMessage());
         }
     }
 
-	static void showFileList(String ext) { 
+    static void showFileList(String ext) {
         if(DEBUG==1) System.out.println("show file list");
-		File folder = new File("bibly");
-		File[] listOfFiles = folder.listFiles();
-		Arrays.sort(listOfFiles);
-		String files="";
-		boolean first=true;
-		boolean found=false;
-		
-		for (int i=0;i<listOfFiles.length;i++) {
-			String name=listOfFiles[i].getName();
-			if (	listOfFiles[i].isFile() && 
-					name.toLowerCase().endsWith(ext)) {
-				found=true;
-				if(first) first=false; else files+=", ";
-				files+=name.substring(0,name.lastIndexOf("."));
-			}
-		}
+        File folder = new File("bibly");
+        File[] listOfFiles = folder.listFiles();
+        Arrays.sort(listOfFiles);
+        String files="";
+        boolean first=true;
+        boolean found=false;
 
-		textarea.append("Bibly files:"+newline+newline);
-		if(found) {
-			textarea.append(files+newline+newline);
-		} else {
-			textarea.append("None found."+newline+newline);			
-		}
-	}
+        for (int i=0; i<listOfFiles.length; i++) {
+            String name=listOfFiles[i].getName();
+            if (	listOfFiles[i].isFile() &&
+                    name.toLowerCase().endsWith(ext)) {
+                found=true;
+                //if(first) first=false; else files+=", ";
+                files+=name.substring(0,name.lastIndexOf("."))+newline;
+            }
+        }
 
-	static void deleteFile(String filename) {
+        textarea.append("Bibly files:"+newline+newline);
+        if(found) {
+            textarea.append(files+newline);
+        } else {
+            textarea.append("None found."+newline);
+        }
+    }
+
+    static void deleteFile(String filename) {
         if(DEBUG==1) System.out.println("delete file");
-		filename="bibly/"+filename.trim()+".bibly";
-		File file = new File(filename); 
+        filename="bibly/"+filename.trim()+".bibly";
+        File file = new File(filename);
         if(file.exists() && !file.isDirectory()) {
             int dialogResult = JOptionPane.showConfirmDialog(null,"Do you want to delete file: "+filename,"Warning",JOptionPane.YES_NO_OPTION);
-            if(dialogResult == JOptionPane.NO_OPTION){
+            if(dialogResult == JOptionPane.NO_OPTION) {
                 return;
             }
         }
-	    if (file.delete()) { 
-	    	JOptionPane.showMessageDialog(null,"Deleted file: "+filename,"Info",JOptionPane.INFORMATION_MESSAGE); 
-	    } else {
-	    	JOptionPane.showMessageDialog(null,"Failed to delete: "+filename,"Warning",JOptionPane.WARNING_MESSAGE); 
-	    } 
-	}
+        if (file.delete()) {
+            JOptionPane.showMessageDialog(null,"Deleted file: "+filename,"Info",JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null,"Failed to delete: "+filename,"Warning",JOptionPane.WARNING_MESSAGE);
+        }
+    }
 
 
     public static void main(String[] args) {
@@ -557,22 +557,25 @@ class Main {
         frame.add(textfield,BorderLayout.SOUTH);
 
         frame.addWindowListener( new WindowAdapter() {
-            public void windowOpened( WindowEvent e ){
+            public void windowOpened( WindowEvent e ) {
                 textfield.requestFocus();
             }
-        }); 
+        });
 
         frame.setVisible(true);
 
-        JOptionPane.showMessageDialog(null,"Type .help for commands.","Info",JOptionPane.INFORMATION_MESSAGE); 
+        JOptionPane.showMessageDialog(null,"Type .help for commands.","Information",JOptionPane.INFORMATION_MESSAGE);
 
         textfield.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
 
+
                 if(e.getSource()==textfield) {
 
                     String text=textfield.getText().trim();
+
+                    if(text.isEmpty()) return;
 
                     if(text.equals(".help")) {
 
@@ -598,11 +601,11 @@ class Main {
 
                         save(filename);
 
-                    } else if(text.startsWith(".load")) {
+                    } else if(text.startsWith(".open")) {
 
                         String filename=text.substring(5).trim();
 
-                        load(filename);
+                        open(filename);
 
                     } else if(text.equals(".clear")) {
 
@@ -640,5 +643,6 @@ class Main {
         });
 
     }
+
 }
 
