@@ -18,7 +18,7 @@ class BiblyBot extends PircBot {
 
 
     static Timer timer = null;
- 
+
     static int allottedTime=10;
     static int remainingTime=allottedTime;
 
@@ -48,9 +48,9 @@ class BiblyBot extends PircBot {
         if (message.equals(".countdown")) {
 
             if(timer==null) {
-            
+
                 ActionListener taskPerformer = new ActionListener() {
-                
+
                     public void actionPerformed(ActionEvent e) {
 
                         remainingTime--;
@@ -68,16 +68,16 @@ class BiblyBot extends PircBot {
                 };
 
                 timer = new Timer(1000,taskPerformer);
- 
+
                 sendMessage(channel, sender + ": Timer is starts now.");
                 remainingTime=allottedTime;
-                timer.setInitialDelay(0); 
+                timer.setInitialDelay(0);
                 timer.start();
-     
+
             } else if(!timer.isRunning()) {
                 sendMessage(channel, sender + ": Timer is starts now.");
                 remainingTime=allottedTime;
-                timer.setInitialDelay(0); 
+                timer.setInitialDelay(0);
                 timer.start();
             } else {
                 sendMessage(channel, sender + ": Timer is running.");

@@ -9,14 +9,13 @@ class BiblyBot extends PircBot {
     }
 
     public void onMessage(
-            String channel, String sender,
-            String login, String hostname,
-            String message) {
+        String channel, String sender,
+        String login, String hostname,
+        String message) {
 
         if (message.equalsIgnoreCase("")) {
         }
     }
-    
 }
 
 
