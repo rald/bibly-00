@@ -69,13 +69,13 @@ class BiblyBot extends PircBot {
 
                 timer = new Timer(1000,taskPerformer);
 
-                sendMessage(channel, sender + ": Timer is starts now.");
+                sendMessage(channel, sender + ": Timer starts now.");
                 remainingTime=allottedTime;
                 timer.setInitialDelay(0);
                 timer.start();
 
             } else if(!timer.isRunning()) {
-                sendMessage(channel, sender + ": Timer is starts now.");
+                sendMessage(channel, sender + ": Timer starts now.");
                 remainingTime=allottedTime;
                 timer.setInitialDelay(0);
                 timer.start();
